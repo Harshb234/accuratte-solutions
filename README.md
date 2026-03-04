@@ -90,4 +90,4 @@ This project is [Private](LICENSE). All rights reserved.
 
 ---
 
-Built with ❤️ by **Accuratte Solutions Team**
+
