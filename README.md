@@ -19,70 +19,72 @@ Accuratte Solutions is a modern, high-performance corporate web application desi
 ## 🛠️ Tech Stack
 
 - **Frontend**: React 18
+- **Backend**: Node.js & Express
+- **Database**: MongoDB (via Mongoose)
 - **Build Tool**: Vite
-- **Styling**: Tailwind CSS
+- **Styling**: Tailwind CSS / Vanilla CSS
 - **Animations**: Framer Motion
 - **Icons**: React Icons
 - **Routing**: React Router DOM v6
 - **Context API**: Custom Auth Provider for state management
+
+## 📂 Project Structure
+
+```text
+accuratte-solutions/
+├── server/             # Node.js/Express Backend
+│   ├── config/         # Database configuration
+│   ├── middleware/     # Auth & validation middleware
+│   ├── models/         # Database schemas (Mongoose)
+│   ├── routes/         # API endpoints
+│   └── server.js       # Entry point
+├── src/                # React Frontend
+│   ├── components/     # Reusable UI components
+│   ├── context/        # React Context (Auth, etc.)
+│   ├── pages/          # Main application pages
+│   ├── App.jsx         # Main application component & routes
+│   └── main.jsx        # Entry point
+├── tailwind.config.js  # Tailwind CSS configuration
+└── vite.config.js      # Vite configuration
+```
 
 ## 🚀 Getting Started
 
 ### Prerequisites
 
 - [Node.js](https://nodejs.org/) (v18.0.0 or higher)
-- [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
+- [MongoDB](https://www.mongodb.com/) (Local or Atlas)
 
 ### Installation
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/your-username/accuratte-solutions.git
-   cd accuratte-solutions
-   ```
-
-2. Install dependencies:
+1. Install Frontend dependencies:
    ```bash
    npm install
    ```
 
-3. Create a `.env` file (if applicable) and add your environment variables.
+2. Install Backend dependencies:
+   ```bash
+   cd server
+   npm install
+   ```
 
-### Development
+3. Configure Environment:
+   - Create `server/.env` based on the provided defaults (MongoDB URI, JWT Secret).
 
-Run the development server:
+### Running the Application
+
+**Run Backend (from root):**
+```bash
+cd server
+npm run dev
+```
+
+**Run Frontend (from root):**
 ```bash
 npm run dev
 ```
+
 The application will be available at `http://localhost:5173`.
-
-### Production
-
-Build the project for production:
-```bash
-npm run build
-```
-Preview the production build:
-```bash
-npm run preview
-```
-
-## 📂 Project Structure
-
-```text
-accuratte-solutions/
-├── src/
-│   ├── components/     # Reusable UI components
-│   ├── context/        # React Context (Auth, etc.)
-│   ├── hooks/          # Custom React hooks
-│   ├── pages/          # Main application pages
-│   ├── App.jsx         # Main application component & routes
-│   ├── index.css       # Global styles & Tailwind directives
-│   └── main.jsx        # Entry point
-├── index.html          # HTML template
-├── tailwind.config.js  # Tailwind CSS configuration
-└── vite.config.js      # Vite configuration
-```
 
 ## 📄 License
 

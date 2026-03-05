@@ -8,16 +8,21 @@ function LoginPage() {
     const [form, setForm] = useState({ email: '', password: '' });
     const [remember, setRemember] = useState(false);
     const [toast, setToast] = useState('');
-    const { loginWithGoogle, loginWithGithub, loginWithEmail } = useAuth();
+    const { loginWithGoogle, loginWithGithub, loginWithEmail, loading, error } = useAuth();
     const navigate = useNavigate();
 
     const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        loginWithEmail(form.email);
-        showToast('Login successful! Redirecting...');
-        setTimeout(() => navigate('/account'), 800);
+        try {
+            await loginWithEmail(form.email, form.password);
+            showToast('Login successful! Redirecting...');
+            setTimeout(() => navigate('/account'), 800);
+        } catch (err) {
+            // Error is handled by AuthContext and available via error state
+        }
     };
+
 
     const showToast = (msg) => {
         setToast(msg);
@@ -107,7 +112,23 @@ function LoginPage() {
                         </div>
                     </div>
 
+                    {/* Error Message */}
+                    {error && (
+                        <div style={{
+                            marginBottom: '20px', padding: '12px', borderRadius: '12px',
+                            background: '#fef2f2', border: '1px solid #fee2e2',
+                            color: '#dc2626', fontSize: '13px', fontWeight: 500,
+                            display: 'flex', alignItems: 'center', gap: '8px'
+                        }}>
+                            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            {error}
+                        </div>
+                    )}
+
                     {/* Form */}
+
                     <form onSubmit={handleSubmit}>
                         <div style={{ marginBottom: '16px' }}>
                             <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: '#334155', marginBottom: '6px' }}>Email Address</label>
@@ -159,18 +180,20 @@ function LoginPage() {
 
                         <button
                             type="submit"
+                            disabled={loading}
                             style={{
                                 width: '100%', padding: '14px', borderRadius: '12px',
-                                background: '#0099ff', color: 'white', fontWeight: 700,
-                                fontSize: '15px', border: 'none', cursor: 'pointer',
-                                boxShadow: '0 4px 14px rgba(0,153,255,0.3)',
+                                background: loading ? '#94a3b8' : '#0099ff', color: 'white', fontWeight: 700,
+                                fontSize: '15px', border: 'none', cursor: loading ? 'not-allowed' : 'pointer',
+                                boxShadow: loading ? 'none' : '0 4px 14px rgba(0,153,255,0.3)',
                                 transition: 'background 0.2s, transform 0.1s'
                             }}
-                            onMouseDown={(e) => e.target.style.transform = 'scale(0.98)'}
-                            onMouseUp={(e) => e.target.style.transform = 'scale(1)'}
+                            onMouseDown={(e) => !loading && (e.target.style.transform = 'scale(0.98)')}
+                            onMouseUp={(e) => !loading && (e.target.style.transform = 'scale(1)')}
                         >
-                            Sign In
+                            {loading ? 'Signing In...' : 'Sign In'}
                         </button>
+
                     </form>
 
                     <p style={{ textAlign: 'center', fontSize: '13px', color: '#64748b', marginTop: '20px' }}>

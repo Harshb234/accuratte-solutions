@@ -2,38 +2,15 @@ import { createContext, useContext, useState, useEffect } from 'react';
 
 const AuthContext = createContext(null);
 
-const MOCK_USERS = {
-    google: {
-        name: 'Harsh Bambatkar',
-        email: 'harshbambatkar2004@gmail.com',
-        avatar: 'HB',
-        provider: 'Google',
-        plan: 'Starter',
-        joinDate: 'March 2026',
-    },
-    github: {
-        name: 'Harsh Bambatkar',
-        email: 'harshbambatkar@github.com',
-        avatar: 'HB',
-        provider: 'GitHub',
-        plan: 'Starter',
-        joinDate: 'March 2026',
-    },
-    email: {
-        name: 'User',
-        email: '',
-        avatar: 'U',
-        provider: 'Email',
-        plan: 'Free Trial',
-        joinDate: 'March 2026',
-    }
-};
+const API_URL = 'http://localhost:5000/api';
 
 export function AuthProvider({ children }) {
     const [user, setUser] = useState(() => {
         const saved = localStorage.getItem('accuratte_user');
         return saved ? JSON.parse(saved) : null;
     });
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         if (user) {
@@ -43,23 +20,62 @@ export function AuthProvider({ children }) {
         }
     }, [user]);
 
+    const loginWithEmail = async (email, password) => {
+        setLoading(true);
+        setError(null);
+        try {
+            const response = await fetch(`${API_URL}/auth/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.message || 'Login failed');
+            setUser(data);
+            return data;
+        } catch (err) {
+            setError(err.message);
+            throw err;
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const signup = async (name, email, password) => {
+        setLoading(true);
+        setError(null);
+        try {
+            const response = await fetch(`${API_URL}/auth/signup`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, email, password })
+            });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.message || 'Signup failed');
+            setUser(data);
+            return data;
+        } catch (err) {
+            setError(err.message);
+            throw err;
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const loginWithGoogle = () => {
-        setUser(MOCK_USERS.google);
+        // Mocking for now, would integrate with real Google OAuth later
+        setUser({ name: 'Harsh Bambatkar', email: 'harshbambatkar2004@gmail.com', avatar: 'HB', provider: 'Google', plan: 'Starter' });
     };
 
     const loginWithGithub = () => {
-        setUser(MOCK_USERS.github);
-    };
-
-    const loginWithEmail = (email, name) => {
-        const initials = (name || email).split(/[\s@]/).filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join('');
-        setUser({ ...MOCK_USERS.email, email, name: name || email.split('@')[0], avatar: initials });
+        // Mocking for now
+        setUser({ name: 'Harsh Bambatkar', email: 'harshbambatkar@github.com', avatar: 'HB', provider: 'GitHub', plan: 'Starter' });
     };
 
     const logout = () => setUser(null);
 
     return (
-        <AuthContext.Provider value={{ user, loginWithGoogle, loginWithGithub, loginWithEmail, logout }}>
+        <AuthContext.Provider value={{ user, loading, error, loginWithGoogle, loginWithGithub, loginWithEmail, signup, logout }}>
             {children}
         </AuthContext.Provider>
     );
@@ -70,3 +86,4 @@ export function useAuth() {
     if (!ctx) throw new Error('useAuth must be used within AuthProvider');
     return ctx;
 }
+

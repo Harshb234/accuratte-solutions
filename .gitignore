@@ -1,4 +1,15 @@
-
+# General
 node_modules
 dist
 .env
+.env.*
+*.log
+
+# Backend specific
+server/node_modules
+server/.env
+server/dist
+
+# OS files
+.DS_Store
+Thumbs.db
