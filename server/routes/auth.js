@@ -53,6 +53,15 @@ router.post('/signup', async (req, res) => {
 // @route   POST /api/auth/login
 // @access  Public
 router.post('/login', async (req, res) => {
+    // Check if today is a weekend/holiday
+    const today = new Date();
+    const dayOfWeek = today.getDay(); // 0 is Sunday, 6 is Saturday
+    
+    // Check if it's a weekend (we can also add specific holiday dates here)
+    if (dayOfWeek === 0 || dayOfWeek === 6) {
+        return res.status(403).json({ message: 'Access denied. Logins are disabled during weekends and holidays.' });
+    }
+
     const { email, password } = req.body;
 
     try {

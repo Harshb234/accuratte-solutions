@@ -63,11 +63,25 @@ export function AuthProvider({ children }) {
     };
 
     const loginWithGoogle = () => {
+        const today = new Date();
+        const dayOfWeek = today.getDay();
+        if (dayOfWeek === 0 || dayOfWeek === 6) {
+            setError('Access denied. Logins are disabled during weekends and holidays.');
+            throw new Error('Access denied');
+        }
+
         // Mocking for now, would integrate with real Google OAuth later
         setUser({ name: 'Harsh Bambatkar', email: 'harshbambatkar2004@gmail.com', avatar: 'HB', provider: 'Google', plan: 'Starter' });
     };
 
     const loginWithGithub = () => {
+        const today = new Date();
+        const dayOfWeek = today.getDay();
+        if (dayOfWeek === 0 || dayOfWeek === 6) {
+            setError('Access denied. Logins are disabled during weekends and holidays.');
+            throw new Error('Access denied');
+        }
+
         // Mocking for now
         setUser({ name: 'Harsh Bambatkar', email: 'harshbambatkar@github.com', avatar: 'HB', provider: 'GitHub', plan: 'Starter' });
     };

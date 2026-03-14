@@ -1,13 +1,16 @@
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import AccuratLogo from '../components/AccuratLogo';
 import { useAuth } from '../context/AuthContext';
+import HolidayLockoutScreen from '../components/HolidayLockoutScreen';
 
 function LoginPage() {
     const [form, setForm] = useState({ email: '', password: '' });
     const [remember, setRemember] = useState(false);
     const [toast, setToast] = useState('');
+    const [isLockedOut, setIsLockedOut] = useState(false);
+    const [lockoutMsg, setLockoutMsg] = useState('');
     const { loginWithGoogle, loginWithGithub, loginWithEmail, loading, error } = useAuth();
     const navigate = useNavigate();
 
@@ -20,6 +23,10 @@ function LoginPage() {
             setTimeout(() => navigate('/account'), 800);
         } catch (err) {
             // Error is handled by AuthContext and available via error state
+            if (err.message && err.message.includes('Access denied')) {
+                setLockoutMsg(err.message);
+                setIsLockedOut(true);
+            }
         }
     };
 
@@ -30,19 +37,37 @@ function LoginPage() {
     };
 
     const handleGoogleLogin = () => {
-        loginWithGoogle();
-        showToast('Signed in with Google!');
-        setTimeout(() => navigate('/account'), 800);
+        try {
+            loginWithGoogle();
+            showToast('Signed in with Google!');
+            setTimeout(() => navigate('/account'), 800);
+        } catch (err) {
+            if (err.message && err.message.includes('Access denied')) {
+                setLockoutMsg(err.message);
+                setIsLockedOut(true);
+            }
+        }
     };
 
     const handleGithubLogin = () => {
-        loginWithGithub();
-        showToast('Signed in with GitHub!');
-        setTimeout(() => navigate('/account'), 800);
+        try {
+            loginWithGithub();
+            showToast('Signed in with GitHub!');
+            setTimeout(() => navigate('/account'), 800);
+        } catch (err) {
+            if (err.message && err.message.includes('Access denied')) {
+                setLockoutMsg(err.message);
+                setIsLockedOut(true);
+            }
+        }
     };
 
     return (
         <section className="min-h-[calc(100vh-80px)] flex items-center justify-center px-4 py-16 relative overflow-hidden">
+            <AnimatePresence>
+                {isLockedOut && <HolidayLockoutScreen message={lockoutMsg} />}
+            </AnimatePresence>
+
             {/* Background blobs */}
             <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-accent-cyan/10 rounded-full blur-[150px] pointer-events-none" />
             <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-primary/15 rounded-full blur-[120px] pointer-events-none" />
