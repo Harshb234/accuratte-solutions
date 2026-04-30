@@ -11,6 +11,7 @@ import SignUpPage from './pages/SignUpPage';
 import LoginPage from './pages/LoginPage';
 import AccountPage from './pages/AccountPage';
 import ScrollToTop from './components/ScrollToTop';
+import Chatbot from './components/Chatbot';
 
 function App() {
     return (
@@ -32,6 +33,7 @@ function App() {
                         </Routes>
                     </main>
                     <Footer />
+                    <Chatbot />
                 </div>
             </AuthProvider>
         </Router>
