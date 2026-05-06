@@ -6,7 +6,8 @@ import { useAuth } from '../context/AuthContext';
 import HolidayLockoutScreen from '../components/HolidayLockoutScreen';
 
 function LoginPage() {
-    const [form, setForm] = useState({ email: '', password: '' });
+    const [form, setForm] = useState({ email: '', employeeId: '', password: '' });
+    const [isEmployee, setIsEmployee] = useState(false);
     const [remember, setRemember] = useState(false);
     const [toast, setToast] = useState('');
     const [isLockedOut, setIsLockedOut] = useState(false);
@@ -18,7 +19,7 @@ function LoginPage() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await loginWithEmail(form.email, form.password);
+            await loginWithEmail(form.email, form.password, isEmployee, form.employeeId);
             showToast('Login successful! Redirecting...');
             setTimeout(() => navigate('/account'), 800);
         } catch (err) {
@@ -155,25 +156,53 @@ function LoginPage() {
                     {/* Form */}
 
                     <form onSubmit={handleSubmit}>
-                        <div style={{ marginBottom: '16px' }}>
-                            <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: '#334155', marginBottom: '6px' }}>Email Address</label>
-                            <input
-                                name="email"
-                                value={form.email}
-                                onChange={handleChange}
-                                type="email"
-                                required
-                                placeholder="john@company.com"
-                                style={{
-                                    width: '100%', padding: '12px 16px', borderRadius: '12px',
-                                    border: '1.5px solid #e2e8f0', background: '#f8fafc',
-                                    fontSize: '14px', outline: 'none', boxSizing: 'border-box',
-                                    transition: 'border-color 0.2s, box-shadow 0.2s'
-                                }}
-                                onFocus={(e) => { e.target.style.borderColor = '#0099ff'; e.target.style.boxShadow = '0 0 0 4px rgba(0,153,255,0.1)'; }}
-                                onBlur={(e) => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none'; }}
-                            />
+                        {/* Employee Toggle */}
+                        <div style={{ display: 'flex', gap: '8px', marginBottom: '20px', background: '#f1f5f9', padding: '4px', borderRadius: '12px' }}>
+                            <button type="button" onClick={() => setIsEmployee(false)} style={{ flex: 1, padding: '8px', borderRadius: '8px', border: 'none', background: !isEmployee ? 'white' : 'transparent', color: !isEmployee ? '#0f172a' : '#64748b', fontWeight: 600, fontSize: '13px', cursor: 'pointer', boxShadow: !isEmployee ? '0 2px 4px rgba(0,0,0,0.05)' : 'none', transition: 'all 0.2s' }}>Customer</button>
+                            <button type="button" onClick={() => setIsEmployee(true)} style={{ flex: 1, padding: '8px', borderRadius: '8px', border: 'none', background: isEmployee ? 'white' : 'transparent', color: isEmployee ? '#0f172a' : '#64748b', fontWeight: 600, fontSize: '13px', cursor: 'pointer', boxShadow: isEmployee ? '0 2px 4px rgba(0,0,0,0.05)' : 'none', transition: 'all 0.2s' }}>Employee</button>
                         </div>
+
+                        {!isEmployee ? (
+                            <div style={{ marginBottom: '16px' }}>
+                                <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: '#334155', marginBottom: '6px' }}>Email Address</label>
+                                <input
+                                    name="email"
+                                    value={form.email}
+                                    onChange={handleChange}
+                                    type="email"
+                                    required={!isEmployee}
+                                    placeholder="john@company.com"
+                                    style={{
+                                        width: '100%', padding: '12px 16px', borderRadius: '12px',
+                                        border: '1.5px solid #e2e8f0', background: '#f8fafc',
+                                        fontSize: '14px', outline: 'none', boxSizing: 'border-box',
+                                        transition: 'border-color 0.2s, box-shadow 0.2s'
+                                    }}
+                                    onFocus={(e) => { e.target.style.borderColor = '#0099ff'; e.target.style.boxShadow = '0 0 0 4px rgba(0,153,255,0.1)'; }}
+                                    onBlur={(e) => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none'; }}
+                                />
+                            </div>
+                        ) : (
+                            <div style={{ marginBottom: '16px' }}>
+                                <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: '#334155', marginBottom: '6px' }}>Employee ID</label>
+                                <input
+                                    name="employeeId"
+                                    value={form.employeeId}
+                                    onChange={handleChange}
+                                    type="text"
+                                    required={isEmployee}
+                                    placeholder="EMP-12345"
+                                    style={{
+                                        width: '100%', padding: '12px 16px', borderRadius: '12px',
+                                        border: '1.5px solid #e2e8f0', background: '#f8fafc',
+                                        fontSize: '14px', outline: 'none', boxSizing: 'border-box',
+                                        transition: 'border-color 0.2s, box-shadow 0.2s'
+                                    }}
+                                    onFocus={(e) => { e.target.style.borderColor = '#0099ff'; e.target.style.boxShadow = '0 0 0 4px rgba(0,153,255,0.1)'; }}
+                                    onBlur={(e) => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none'; }}
+                                />
+                            </div>
+                        )}
 
                         <div style={{ marginBottom: '16px' }}>
                             <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: '#334155', marginBottom: '6px' }}>Password</label>

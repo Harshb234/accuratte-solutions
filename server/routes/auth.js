@@ -15,7 +15,7 @@ const generateToken = (id) => {
 // @route   POST /api/auth/signup
 // @access  Public
 router.post('/signup', async (req, res) => {
-    const { name, email, password } = req.body;
+    const { name, email, password, isEmployee, employeeId } = req.body;
 
     try {
         const userExists = await User.findOne({ email });
@@ -23,11 +23,20 @@ router.post('/signup', async (req, res) => {
         if (userExists) {
             return res.status(400).json({ message: 'User already exists' });
         }
+        
+        if (isEmployee && employeeId) {
+            const employeeIdExists = await User.findOne({ employeeId });
+            if (employeeIdExists) {
+                return res.status(400).json({ message: 'Employee ID already exists' });
+            }
+        }
 
         const user = await User.create({
             name,
             email,
-            password
+            password,
+            isEmployee: isEmployee || false,
+            employeeId: employeeId || null
         });
 
         if (user) {
@@ -35,6 +44,8 @@ router.post('/signup', async (req, res) => {
                 _id: user._id,
                 name: user.name,
                 email: user.email,
+                isEmployee: user.isEmployee,
+                employeeId: user.employeeId,
                 avatar: user.avatar,
                 provider: user.provider,
                 plan: user.plan,
@@ -62,16 +73,27 @@ router.post('/login', async (req, res) => {
         return res.status(403).json({ message: 'Access denied. Logins are disabled during weekends and holidays.' });
     }
 
-    const { email, password } = req.body;
+    const { email, password, isEmployee, employeeId } = req.body;
 
     try {
-        const user = await User.findOne({ email });
+        let query = {};
+        if (isEmployee) {
+            if (!employeeId) return res.status(400).json({ message: 'Employee ID is required' });
+            query = { employeeId };
+        } else {
+            if (!email) return res.status(400).json({ message: 'Email is required' });
+            query = { email };
+        }
+        
+        const user = await User.findOne(query);
 
         if (user && (await user.matchPassword(password))) {
             res.json({
                 _id: user._id,
                 name: user.name,
                 email: user.email,
+                isEmployee: user.isEmployee,
+                employeeId: user.employeeId,
                 avatar: user.avatar,
                 provider: user.provider,
                 plan: user.plan,

@@ -11,6 +11,14 @@ const userSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
+    isEmployee: {
+        type: Boolean,
+        default: false
+    },
+    employeeId: {
+        type: String,
+        default: null
+    },
     password: {
         type: String,
         required: true

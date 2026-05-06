@@ -20,14 +20,14 @@ export function AuthProvider({ children }) {
         }
     }, [user]);
 
-    const loginWithEmail = async (email, password) => {
+    const loginWithEmail = async (email, password, isEmployee = false, employeeId = null) => {
         setLoading(true);
         setError(null);
         try {
             const response = await fetch(`${API_URL}/auth/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password })
+                body: JSON.stringify({ email, password, isEmployee, employeeId })
             });
             const data = await response.json();
             if (!response.ok) throw new Error(data.message || 'Login failed');
@@ -41,14 +41,14 @@ export function AuthProvider({ children }) {
         }
     };
 
-    const signup = async (name, email, password) => {
+    const signup = async (name, email, password, isEmployee = false, employeeId = null) => {
         setLoading(true);
         setError(null);
         try {
             const response = await fetch(`${API_URL}/auth/signup`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name, email, password })
+                body: JSON.stringify({ name, email, password, isEmployee, employeeId })
             });
             const data = await response.json();
             if (!response.ok) throw new Error(data.message || 'Signup failed');

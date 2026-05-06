@@ -5,7 +5,8 @@ import AccuratLogo from '../components/AccuratLogo';
 import { useAuth } from '../context/AuthContext';
 
 function SignUpPage() {
-    const [form, setForm] = useState({ name: '', email: '', password: '', confirm: '' });
+    const [form, setForm] = useState({ name: '', email: '', employeeId: '', password: '', confirm: '' });
+    const [isEmployee, setIsEmployee] = useState(false);
     const [toast, setToast] = useState('');
     const { loginWithGoogle, loginWithGithub, signup, loading, error } = useAuth();
     const navigate = useNavigate();
@@ -18,7 +19,7 @@ function SignUpPage() {
             return;
         }
         try {
-            await signup(form.name, form.email, form.password);
+            await signup(form.name, form.email, form.password, isEmployee, form.employeeId);
             showToast('Account created! Redirecting...');
             setTimeout(() => navigate('/account'), 800);
         } catch (err) {
@@ -149,15 +150,34 @@ function SignUpPage() {
                     {/* Form */}
 
                     <form onSubmit={handleSubmit}>
+                        {/* Employee Toggle */}
+                        <div style={{ display: 'flex', gap: '8px', marginBottom: '20px', background: '#f1f5f9', padding: '4px', borderRadius: '12px' }}>
+                            <button type="button" onClick={() => setIsEmployee(false)} style={{ flex: 1, padding: '8px', borderRadius: '8px', border: 'none', background: !isEmployee ? 'white' : 'transparent', color: !isEmployee ? '#0f172a' : '#64748b', fontWeight: 600, fontSize: '13px', cursor: 'pointer', boxShadow: !isEmployee ? '0 2px 4px rgba(0,0,0,0.05)' : 'none', transition: 'all 0.2s' }}>Customer</button>
+                            <button type="button" onClick={() => setIsEmployee(true)} style={{ flex: 1, padding: '8px', borderRadius: '8px', border: 'none', background: isEmployee ? 'white' : 'transparent', color: isEmployee ? '#0f172a' : '#64748b', fontWeight: 600, fontSize: '13px', cursor: 'pointer', boxShadow: isEmployee ? '0 2px 4px rgba(0,0,0,0.05)' : 'none', transition: 'all 0.2s' }}>Employee</button>
+                        </div>
+
                         <div style={{ marginBottom: '16px' }}>
                             <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: '#334155', marginBottom: '6px' }}>Full Name</label>
                             <input name="name" value={form.name} onChange={handleChange} type="text" required placeholder="John Doe" style={inputStyle} onFocus={handleFocus} onBlur={handleBlur} />
                         </div>
 
-                        <div style={{ marginBottom: '16px' }}>
-                            <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: '#334155', marginBottom: '6px' }}>Email Address</label>
-                            <input name="email" value={form.email} onChange={handleChange} type="email" required placeholder="john@company.com" style={inputStyle} onFocus={handleFocus} onBlur={handleBlur} />
-                        </div>
+                        {!isEmployee ? (
+                            <div style={{ marginBottom: '16px' }}>
+                                <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: '#334155', marginBottom: '6px' }}>Email Address</label>
+                                <input name="email" value={form.email} onChange={handleChange} type="email" required={!isEmployee} placeholder="john@company.com" style={inputStyle} onFocus={handleFocus} onBlur={handleBlur} />
+                            </div>
+                        ) : (
+                            <>
+                                <div style={{ marginBottom: '16px' }}>
+                                    <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: '#334155', marginBottom: '6px' }}>Email Address</label>
+                                    <input name="email" value={form.email} onChange={handleChange} type="email" required placeholder="employee@company.com" style={inputStyle} onFocus={handleFocus} onBlur={handleBlur} />
+                                </div>
+                                <div style={{ marginBottom: '16px' }}>
+                                    <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: '#334155', marginBottom: '6px' }}>Employee ID</label>
+                                    <input name="employeeId" value={form.employeeId} onChange={handleChange} type="text" required={isEmployee} placeholder="EMP-12345" style={inputStyle} onFocus={handleFocus} onBlur={handleBlur} />
+                                </div>
+                            </>
+                        )}
 
                         <div style={{ marginBottom: '16px' }}>
                             <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: '#334155', marginBottom: '6px' }}>Password</label>
