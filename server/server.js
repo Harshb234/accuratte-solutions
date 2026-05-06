@@ -12,7 +12,11 @@ connectDB();
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+    origin: ['http://localhost:5173', 'https://accurattesolutions.in', 'https://www.accurattesolutions.in'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true
+}));
 app.use(express.json());
 
 app.get('/', (req, res) => {
