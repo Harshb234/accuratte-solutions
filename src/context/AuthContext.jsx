@@ -70,8 +70,8 @@ export function AuthProvider({ children }) {
             throw new Error('Access denied');
         }
 
-        // Mocking for now, would integrate with real Google OAuth later
-        setUser({ name: 'Harsh Bambatkar', email: 'harshbambatkar2004@gmail.com', avatar: 'HB', provider: 'Google', plan: 'Starter' });
+        setError('Google login is not implemented yet. Please use email and password.');
+        throw new Error('Google login is not implemented yet.');
     };
 
     const loginWithGithub = () => {
@@ -82,8 +82,8 @@ export function AuthProvider({ children }) {
             throw new Error('Access denied');
         }
 
-        // Mocking for now
-        setUser({ name: 'Harsh Bambatkar', email: 'harshbambatkar@github.com', avatar: 'HB', provider: 'GitHub', plan: 'Starter' });
+        setError('GitHub login is not implemented yet. Please use email and password.');
+        throw new Error('GitHub login is not implemented yet.');
     };
 
     const logout = () => setUser(null);

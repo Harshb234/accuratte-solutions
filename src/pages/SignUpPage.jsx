@@ -33,15 +33,23 @@ function SignUpPage() {
     };
 
     const handleGoogleLogin = () => {
-        loginWithGoogle();
-        showToast('Signed up with Google!');
-        setTimeout(() => navigate('/account'), 800);
+        try {
+            loginWithGoogle();
+            showToast('Signed up with Google!');
+            setTimeout(() => navigate('/account'), 800);
+        } catch (err) {
+            // Error managed by AuthContext
+        }
     };
 
     const handleGithubLogin = () => {
-        loginWithGithub();
-        showToast('Signed up with GitHub!');
-        setTimeout(() => navigate('/account'), 800);
+        try {
+            loginWithGithub();
+            showToast('Signed up with GitHub!');
+            setTimeout(() => navigate('/account'), 800);
+        } catch (err) {
+            // Error managed by AuthContext
+        }
     };
 
     const inputStyle = {
