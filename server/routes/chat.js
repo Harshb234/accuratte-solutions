@@ -1,6 +1,22 @@
 import express from 'express';
+import { GoogleGenerativeAI } from '@google/generative-ai';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const router = express.Router();
+
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+
+const SYSTEM_PROMPT = `You are a helpful customer support assistant for Accuratte Solutions. 
+Accuratte Solutions offers:
+- Digital Transformation
+- Cloud Solutions
+- AI Integration
+- Custom Software Development
+- Enterprise Security
+
+Answer user queries concisely and politely. Guide them to our Contact page for detailed pricing or specific consultations.`;
 
 const responses = [
     {
@@ -55,17 +71,48 @@ const responses = [
 
 const DEFAULT_REPLY = "That's a great question! For detailed information on that topic, I'd recommend reaching out to our team directly via the **Contact page**. They'll be happy to help. In the meantime, I can tell you about our services: Digital Transformation, Cloud Solutions, AI Integration, Custom Software Development, and Enterprise Security.";
 
-router.post('/', (req, res) => {
-    const { message } = req.body;
+router.post('/', async (req, res) => {
+    try {
+        const { message, history } = req.body;
 
-    if (!message || !message.trim()) {
-        return res.status(400).json({ error: 'Message is required' });
+        if (!message || !message.trim()) {
+            return res.status(400).json({ error: 'Message is required' });
+        }
+
+        try {
+            // Initialize model
+            const model = genAI.getGenerativeModel({ 
+                model: "gemini-2.0-flash",
+                systemInstruction: SYSTEM_PROMPT 
+            });
+
+            const formattedHistory = (history || []).map(msg => ({
+                role: msg.role === 'model' ? 'model' : 'user',
+                parts: msg.parts
+            }));
+
+            const chat = model.startChat({
+                history: formattedHistory,
+            });
+
+            const result = await chat.sendMessage(message);
+            const response = result.response;
+            const text = response.text();
+
+            return res.json({ message: text });
+        } catch (aiError) {
+            console.error('AI Chat error, falling back to hardcoded responses:', aiError);
+            
+            // Fallback logic
+            const lower = message.toLowerCase();
+            const matched = responses.find(r => r.keywords.some(k => lower.includes(k)));
+
+            return res.json({ message: matched ? matched.reply : DEFAULT_REPLY });
+        }
+    } catch (error) {
+        console.error('Chat error:', error);
+        res.status(500).json({ error: 'Failed to process chat message' });
     }
-
-    const lower = message.toLowerCase();
-    const matched = responses.find(r => r.keywords.some(k => lower.includes(k)));
-
-    res.json({ message: matched ? matched.reply : DEFAULT_REPLY });
 });
 
 export default router;
