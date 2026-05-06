@@ -19,9 +19,9 @@ function LoginPage() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await loginWithEmail(form.email, form.password, isEmployee, form.employeeId);
+            const data = await loginWithEmail(form.email, form.password, isEmployee, form.employeeId);
             showToast('Login successful! Redirecting...');
-            setTimeout(() => navigate('/account'), 800);
+            setTimeout(() => navigate(data.isEmployee ? '/workspace' : '/account'), 800);
         } catch (err) {
             // Error is handled by AuthContext and available via error state
             if (err.message && err.message.includes('Access denied')) {

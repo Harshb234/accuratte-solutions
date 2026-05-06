@@ -10,6 +10,7 @@ import AboutPage from './pages/AboutPage';
 import SignUpPage from './pages/SignUpPage';
 import LoginPage from './pages/LoginPage';
 import AccountPage from './pages/AccountPage';
+import WorkspacePage from './pages/WorkspacePage';
 import ScrollToTop from './components/ScrollToTop';
 import Chatbot from './components/Chatbot';
 
@@ -30,6 +31,7 @@ function App() {
                             <Route path="/signup" element={<SignUpPage />} />
                             <Route path="/login" element={<LoginPage />} />
                             <Route path="/account" element={<AccountPage />} />
+                            <Route path="/workspace" element={<WorkspacePage />} />
                         </Routes>
                     </main>
                     <Footer />

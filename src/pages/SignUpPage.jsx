@@ -19,9 +19,9 @@ function SignUpPage() {
             return;
         }
         try {
-            await signup(form.name, form.email, form.password, isEmployee, form.employeeId);
+            const data = await signup(form.name, form.email, form.password, isEmployee, form.employeeId);
             showToast('Account created! Redirecting...');
-            setTimeout(() => navigate('/account'), 800);
+            setTimeout(() => navigate(data.isEmployee ? '/workspace' : '/account'), 800);
         } catch (err) {
             // Error managed by AuthContext
         }
